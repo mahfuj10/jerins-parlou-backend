@@ -21,36 +21,37 @@ async function run() {
         await client.connect();
         const database = client.db('jerins-parlour');
         const serviceCollection = database.collection("services");
-        const bookingCollection = database.collection("bookService")
-        const usersCollection = database.collection("users")
+        const bookingCollection = database.collection("bookService");
+        const usersCollection = database.collection("users");
+        const reviewsCollection = database.collection("userReview");
 
         // get service api
         app.get('/services', async (req, res) => {
             const cursor = serviceCollection.find({});
             const service = await cursor.toArray();
             res.send(service);
-        })
+        });
 
         app.get('/services/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) }
             const singleService = await serviceCollection.findOne(query)
             res.send(singleService);
-        })
+        });
 
         // post api on book
         app.post('/book', async (req, res) => {
             const bookService = req.body;
             const result = await bookingCollection.insertOne(bookService);
             res.send(result);
-        })
+        });
 
         // get book apu
         app.get('/book', async (req, res) => {
             const book = bookingCollection.find({});
             const bookService = await book.toArray();
             res.send(bookService)
-        })
+        });
 
         app.get('/book/:email', async (req, res) => {
             const email = req.params.email;
@@ -58,14 +59,20 @@ async function run() {
             const book = bookingCollection.find(query);
             const bookService = await book.toArray();
             res.send(bookService)
+        });
+
+        // user feedback
+        app.get('/review', async (req, res) => {
+            const result = await reviewsCollection.find({}).toArray();
+            res.send(result);
         })
+
         // save user
         app.post('/users', async (req, res) => {
             const user = req.body;
             const result = await usersCollection.insertOne(user)
             res.send(result);
-        })
-
+        });
 
         app.put('/users', async (req, res) => {
             const user = req.body;
@@ -82,11 +89,10 @@ async function run() {
             const updateDoc = { $set: { role: "admin" } };
             const result = await usersCollection.updateOne(filter, updateDoc);
             res.json(result);
-        })
+        });
 
 
         // update status
-
         app.put('/updateStatus/:id', async (req, res) => {
             const id = req.params.id;
             const updateStatus = req.body.status;
@@ -96,8 +102,8 @@ async function run() {
             })
             console.log(updateStatus);
             res.send(result);
+        });
 
-        })
         // update
 
 
