@@ -35,7 +35,10 @@ async function run() {
         app.get('/services/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) }
-            const singleService = await serviceCollection.findOne(query)
+            const options = {
+                projection: { _id: 0 },
+            };
+            const singleService = await serviceCollection.findOne(query, options)
             res.send(singleService);
         });
 
@@ -52,7 +55,7 @@ async function run() {
             const bookService = await book.toArray();
             res.send(bookService)
         });
-
+        // get book item with email
         app.get('/book/:email', async (req, res) => {
             const email = req.params.email;
             const query = { email: email }
@@ -65,6 +68,11 @@ async function run() {
         app.get('/review', async (req, res) => {
             const result = await reviewsCollection.find({}).toArray();
             res.send(result);
+        })
+        // post feedback
+        app.post('/review', async (req, res) => {
+            const userFeedback = await reviewsCollection.insertOne(req.body);
+            res.send(userFeedback);
         })
 
         // save user
