@@ -3,7 +3,7 @@ const express = require('express');
 const ObjectId = require('mongodb').ObjectId
 const app = express();
 const cors = require('cors');
-require('dotenv').config()
+require('dotenv').config();
 const port = process.env.PORT || 5000;
 
 
@@ -55,6 +55,15 @@ async function run() {
             const bookService = await book.toArray();
             res.send(bookService)
         });
+
+        // delete cart item
+        app.delete('/book/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await bookingCollection.deleteOne(query);
+            res.send(result);
+        })
+
         // get book item with email
         app.get('/book/:email', async (req, res) => {
             const email = req.params.email;
@@ -82,6 +91,7 @@ async function run() {
             res.send(result);
         });
 
+        // set admin role
         app.put('/users', async (req, res) => {
             const user = req.body;
             const filter = { email: user.email };
@@ -91,6 +101,7 @@ async function run() {
             res.json(result);
         });
 
+        // set user
         app.put('/users/admin', async (req, res) => {
             const user = req.body;
             const filter = { email: user.email };
@@ -104,15 +115,24 @@ async function run() {
         app.put('/updateStatus/:id', async (req, res) => {
             const id = req.params.id;
             const updateStatus = req.body.status;
-            const filter = { _id: id }
+            const filter = { _id: ObjectId(id) }
             const result = await bookingCollection.updateOne(filter, {
                 $set: { status: updateStatus },
             })
-            console.log(updateStatus);
             res.send(result);
         });
 
-        // update
+        // get admin
+
+        app.get('/users/:email', async (req, res) => {
+            const user = await usersCollection.findOne({ email: req.params.email });
+            let Admin = false;
+            if (user?.role === 'admin') {
+                Admin = true;
+            }
+            res.json({ admin: Admin })
+        })
+
 
 
 
