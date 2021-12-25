@@ -61,7 +61,7 @@ async function run() {
                 description,
                 image: imageBuffer
             };
-            const result = await cycleCollection.insertOne(cycle);
+            const result = await serviceCollection.insertOne(cycle);
             res.json(result);
         });
 
